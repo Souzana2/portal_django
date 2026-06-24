@@ -46,7 +46,10 @@
           <td><span class="badge bg-secondary">{{ c.total_acoes }} ações</span></td>
           <td>
             <a href="{% url 'entidades:curso_detalhe' c.pk %}" class="btn btn-sm btn-outline-primary me-1">Ver</a>
-            <a href="{% url 'entidades:curso_editar' c.pk %}" class="btn btn-sm btn-outline-secondary">Editar</a>
+            <div class="btn-group">
+              <a href="{% url 'entidades:curso_editar' c.pk %}" class="btn btn-sm btn-outline-secondary">Editar</a>
+              <a href="{% url 'entidades:curso_eliminar' c.pk %}" class="btn btn-sm btn-outline-danger" onclick="return confirm('Tem a certeza que deseja eliminar este curso?');">Eliminar</a>
+            </div>
           </td>
         </tr>
         {% empty %}

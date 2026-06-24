@@ -8,7 +8,10 @@
     <div class="data-card mb-3">
       <div class="data-card-header">
         <h6><i class="bi bi-person me-2"></i>Dados Pessoais</h6>
-        <a href="{% url 'entidades:formando_editar' formando.pk %}" class="btn btn-sm btn-outline-primary">Editar</a>
+        <div class="btn-group">
+          <a href="{% url 'entidades:formando_editar' formando.pk %}" class="btn btn-sm btn-outline-primary">Editar</a>
+          <a href="{% url 'entidades:formando_eliminar' formando.pk %}" class="btn btn-sm btn-outline-danger" onclick="return confirm('Tem a certeza que deseja eliminar este formando?');">Eliminar</a>
+        </div>
       </div>
       <div style="padding:22px">
         <dl class="row mb-0">

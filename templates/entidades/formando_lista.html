@@ -44,7 +44,10 @@
           <td><span class="badge bg-primary">{{ f.total_inscricoes }}</span></td>
           <td>
             <a href="{% url 'entidades:formando_detalhe' f.pk %}" class="btn btn-sm btn-outline-primary me-1">Ver</a>
-            <a href="{% url 'entidades:formando_editar' f.pk %}" class="btn btn-sm btn-outline-secondary">Editar</a>
+            <div class="btn-group">
+              <a href="{% url 'entidades:formando_editar' f.pk %}" class="btn btn-sm btn-outline-secondary">Editar</a>
+              <a href="{% url 'entidades:formando_eliminar' f.pk %}" class="btn btn-sm btn-outline-danger" onclick="return confirm('Tem a certeza que deseja eliminar este formando?');">Eliminar</a>
+            </div>
           </td>
         </tr>
         {% empty %}

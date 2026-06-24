@@ -38,7 +38,10 @@
           <td><span class="badge bg-primary">{{ e.total_formandos }}</span></td>
           <td>
             <a href="{% url 'entidades:empresa_detalhe' e.pk %}" class="btn btn-sm btn-outline-primary me-1">Ver</a>
-            <a href="{% url 'entidades:empresa_editar' e.pk %}" class="btn btn-sm btn-outline-secondary">Editar</a>
+            <div class="btn-group">
+              <a href="{% url 'entidades:empresa_editar' e.pk %}" class="btn btn-sm btn-outline-secondary">Editar</a>
+              <a href="{% url 'entidades:empresa_eliminar' e.pk %}" class="btn btn-sm btn-outline-danger" onclick="return confirm('Tem a certeza que deseja eliminar esta empresa?');">Eliminar</a>
+            </div>
           </td>
         </tr>
         {% empty %}
