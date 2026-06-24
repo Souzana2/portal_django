@@ -71,23 +71,35 @@ TEMPLATES = [
 
 WSGI_APPLICATION = 'etl_portal.wsgi.application'
 
-# ─── Base de Dados MySQL ──────────────────────────────────────────────────────
-# Credenciais idênticas ao connect.py do pipeline ETL
-# UNIFICADO: O portal agora usa a mesma BD do ETL para consistência total de dados
-DATABASES = {
-    'default': {
-        'ENGINE': 'django.db.backends.mysql',
-        'NAME': 'earthconsulters',      # BD unificada (ETL + Portal)
-        'USER': 'root',
-        'PASSWORD': '',              # XAMPP padrão — sem password
-        'HOST': 'localhost',
-        'PORT': '3306',
-        'OPTIONS': {
-            'charset': 'utf8mb4',
-            'init_command': "SET sql_mode='STRICT_TRANS_TABLES'",
-        },
+# ─── Base de Dados ────────────────────────────────────────────────────────────
+# Configurar DB_ENGINE=sqlite (padrão, zero-config para demo)
+# ou DB_ENGINE=mysql para produção/desenvolvimento com MySQL
+_DB_ENGINE = config('DB_ENGINE', default='sqlite')
+
+if _DB_ENGINE == 'mysql':
+    DATABASES = {
+        'default': {
+            'ENGINE': 'django.db.backends.mysql',
+            'NAME': config('DB_NAME', default='earthconsulters'),
+            'USER': config('DB_USER', default='root'),
+            'PASSWORD': config('DB_PASSWORD', default=''),
+            'HOST': config('DB_HOST', default='localhost'),
+            'PORT': config('DB_PORT', default='3306'),
+            'OPTIONS': {
+                'charset': 'utf8mb4',
+                'init_command': "SET sql_mode='STRICT_TRANS_TABLES'",
+            },
+        }
     }
-}
+else:
+    # SQLite — para demo local sem dependências externas
+    DATABASES = {
+        'default': {
+            'ENGINE': 'django.db.backends.sqlite3',
+            'NAME': BASE_DIR / 'db_demo.sqlite3',
+        }
+    }
+
 
 # ─── Passwords ───────────────────────────────────────────────────────────────
 AUTH_PASSWORD_VALIDATORS = [
