@@ -1,13 +1,15 @@
 {% extends "base.html" %}
 {% load static %}
-{% block title %}Login — Earth Consulters{% endblock %}
+{% block title %}Login — Portal de Formação{% endblock %}
 {% block auth_content %}
 <div class="login-wrapper">
   <div class="login-card">
     <div class="text-center mb-4">
-      <img src="{% static 'img/logo_alternativa.png' %}" alt="Earth Consulters" style="max-height:80px;width:auto">
-      <h4 class="mt-2 fw-700" style="color:#0d2137">Earth Consulters</h4>
-      <p class="text-muted small">Portal Administrativo — Acesso Restrito</p>
+      <div style="width:72px;height:72px;border-radius:20px;background:linear-gradient(135deg,#1a3c5e,#2e7dd1);display:flex;align-items:center;justify-content:center;margin:0 auto 12px;">
+        <i class="bi bi-mortarboard-fill" style="color:#fff;font-size:2rem"></i>
+      </div>
+      <h4 class="mt-2 fw-bold" style="color:#0d2137">Portal de Formação</h4>
+      <p class="text-muted small">Painel Administrativo — Acesso Restrito</p>
     </div>
     <form method="post">
       {% csrf_token %}
