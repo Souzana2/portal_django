@@ -1,0 +1,58 @@
+{% extends "base.html" %}
+{% block title %}Formandos — Earth Consulters{% endblock %}
+{% block page_title %}Formandos{% endblock %}
+{% block content %}
+<form method="get" class="filter-bar">
+  <div>
+    <label class="form-label small fw-semibold mb-1">Pesquisar</label>
+    <input type="search" name="q" class="form-control" value="{{ q }}" placeholder="Nome ou NIF..." style="width:240px">
+  </div>
+  <button type="submit" class="btn btn-primary"><i class="bi bi-funnel me-1"></i>Filtrar</button>
+  <a href="?{{ request.GET.urlencode }}&export=xlsx" class="btn btn-success">
+    <i class="bi bi-file-earmark-excel me-1"></i>Exportar Excel
+  </a>
+  <a href="{% url 'entidades:formando_criar' %}" class="btn btn-outline-primary ms-auto">
+    <i class="bi bi-plus-lg me-1"></i>Novo Formando
+  </a>
+</form>
+
+<div class="data-card">
+  <div class="data-card-header">
+    <h6><i class="bi bi-people me-2"></i>Formandos <span class="text-muted small ms-1">({{ total }})</span></h6>
+  </div>
+  <div class="table-responsive">
+    <table class="table table-hover">
+      <thead><tr><th>Nome</th><th>NIF</th><th>Estado</th><th>Inscrições</th><th></th></tr></thead>
+      <tbody>
+        {% for f in formandos %}
+        <tr>
+          <td><strong>{{ f.nome }}</strong></td>
+          <td><code>{{ f.nif|default:"—" }}</code></td>
+          <td>
+            {% if f.ultimo_estado == 'Certificado' %}
+              <span class="badge badge-estado badge-cert">✓ Certificado</span>
+            {% elif f.ultimo_estado == 'Desistente' %}
+              <span class="badge badge-estado badge-desist">✕ Desistente</span>
+            {% elif f.ultimo_estado == 'Falta doc' %}
+              <span class="badge badge-estado badge-falta">⚠ Falta doc</span>
+            {% elif f.ultimo_estado == 'Pendente' %}
+              <span class="badge badge-estado badge-pend">Pendente</span>
+            {% else %}
+              <span class="text-muted small">—</span>
+            {% endif %}
+          </td>
+          <td><span class="badge bg-primary">{{ f.total_inscricoes }}</span></td>
+          <td>
+            <a href="{% url 'entidades:formando_detalhe' f.pk %}" class="btn btn-sm btn-outline-primary me-1">Ver</a>
+            <a href="{% url 'entidades:formando_editar' f.pk %}" class="btn btn-sm btn-outline-secondary">Editar</a>
+          </td>
+        </tr>
+        {% empty %}
+        <tr><td colspan="5" class="text-center text-muted py-4">Nenhum formando encontrado.</td></tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+  {% with page_obj=formandos %}{% include "includes/pagination.html" %}{% endwith %}
+</div>
+{% endblock %}

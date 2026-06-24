@@ -1,0 +1,80 @@
+{% extends "base.html" %}
+{% block title %}{{ acao.referencia }} — Earth Consulters{% endblock %}
+{% block page_title %}Ação: {{ acao.referencia }}{% endblock %}
+{% block content %}
+<div class="row g-3 mb-4">
+  <div class="col-md-4">
+    <div class="data-card">
+      <div class="data-card-header"><h6><i class="bi bi-calendar-event me-2"></i>Detalhes da Ação</h6></div>
+      <div style="padding:22px">
+        <dl class="row mb-0">
+          <dt class="col-5 text-muted small">Local</dt><dd class="col-7">{{ acao.local|default:"—" }}</dd>
+          <dt class="col-5 text-muted small">Início</dt><dd class="col-7">{{ acao.data_inicio|default:"—" }}</dd>
+          <dt class="col-5 text-muted small">Fim</dt><dd class="col-7">{{ acao.data_fim|default:"—" }}</dd>
+          <dt class="col-5 text-muted small">Ano</dt><dd class="col-7">{{ acao.ano|default:"—" }}</dd>
+          <dt class="col-5 text-muted small">Formador</dt><dd class="col-7">
+            {% if acao.formador %}
+            <a href="{% url 'entidades:formador_detalhe' acao.formador.pk %}">{{ acao.formador.nome }}</a>
+            {% else %}—{% endif %}
+          </dd>
+        </dl>
+      </div>
+    </div>
+  </div>
+  <div class="col-md-8">
+    <div class="data-card">
+      <div class="data-card-header">
+        <h6><i class="bi bi-people me-2"></i>Inscritos ({{ inscricoes|length }})</h6>
+        <a href="?export=xlsx" class="btn btn-sm btn-success">
+          <i class="bi bi-file-earmark-excel me-1"></i>Exportar
+        </a>
+      </div>
+      <div class="table-responsive">
+        <table class="table table-hover mb-0">
+          <thead><tr><th>Formando</th><th>NIF</th><th>Empresa</th><th>Estado</th><th>Nº Cert.</th><th>Pagamento</th><th class="text-end">Ações</th></tr></thead>
+          <tbody>
+            {% for i in inscricoes %}
+            <tr>
+              <td><a href="{% url 'entidades:formando_detalhe' i.formando.pk %}" class="fw-bold">{{ i.formando.nome }}</a></td>
+              <td><code>{{ i.formando.nif|default:"—" }}</code></td>
+              <td><small>{{ i.empresa|default:"—" }}</small></td>
+              <td>
+                {% if i.estado_profissional == 'Certificado' %}
+                  <span class="badge badge-estado badge-cert">✓ Certificado</span>
+                {% elif i.estado_profissional == 'Desistente' %}
+                  <span class="badge badge-estado badge-desist">✕ Desistente</span>
+                {% elif i.estado_profissional == 'Falta doc' %}
+                  <span class="badge badge-estado badge-falta">⚠ Falta doc</span>
+                {% elif i.estado_profissional == 'Pendente' %}
+                  <span class="badge badge-estado badge-pend">Pendente</span>
+                {% else %}
+                  <span class="text-muted small">—</span>
+                {% endif %}
+              </td>
+              <td>{{ i.numero_certificado|default:"—" }}</td>
+              <td>
+                {% if i.estado_pagamento == 'Pago' %}
+                  <span class="badge badge-estado badge-pago">Pago</span>
+                {% else %}
+                  <span class="badge badge-estado badge-pend">Pendente</span>
+                {% endif %}
+              </td>
+              <td class="text-end">
+                <a href="{% url 'entidades:formando_detalhe' i.formando.pk %}" class="btn btn-xs btn-outline-primary" title="Ver Formando">
+                  <i class="bi bi-person"></i>
+                </a>
+                <a href="{% url 'formacao:inscricao_editar' i.pk %}" class="btn btn-xs btn-outline-secondary" title="Editar Inscrição">
+                  <i class="bi bi-pencil"></i>
+                </a>
+              </td>
+            </tr>
+            {% empty %}
+            <tr><td colspan="7" class="text-center text-muted py-3">Sem inscrições.</td></tr>
+            {% endfor %}
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}

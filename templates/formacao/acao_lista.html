@@ -1,0 +1,56 @@
+{% extends "base.html" %}
+{% block title %}Ações — Earth Consulters{% endblock %}
+{% block page_title %}Ações / Turmas{% endblock %}
+{% block content %}
+<form method="get" class="filter-bar">
+  <div>
+    <label class="form-label small fw-semibold mb-1">Pesquisar</label>
+    <input type="search" name="q" class="form-control" value="{{ q }}" placeholder="Referência ou local..." style="width:220px">
+  </div>
+  <div>
+    <label class="form-label small fw-semibold mb-1">Ano</label>
+    <select name="ano" class="form-select" style="width:110px">
+      <option value="">Todos</option>
+      {% for a in anos %}<option value="{{ a }}" {% if a == ano %}selected{% endif %}>{{ a }}</option>{% endfor %}
+    </select>
+  </div>
+  <div>
+    <label class="form-label small fw-semibold mb-1">Formador</label>
+    <input type="text" name="formador" class="form-control" value="{{ formador }}" placeholder="Nome..." style="width:180px">
+  </div>
+  <button type="submit" class="btn btn-primary"><i class="bi bi-funnel me-1"></i>Filtrar</button>
+  <a href="?{{ request.GET.urlencode }}&export=xlsx" class="btn btn-success">
+    <i class="bi bi-file-earmark-excel me-1"></i>Exportar Excel
+  </a>
+</form>
+
+<div class="data-card">
+  <div class="data-card-header">
+    <h6><i class="bi bi-calendar-event me-2"></i>Ações <span class="text-muted small ms-1">({{ total }})</span></h6>
+  </div>
+  <div class="table-responsive">
+    <table class="table table-hover">
+      <thead>
+        <tr><th>Referência</th><th>Local</th><th>Início</th><th>Fim</th><th>Ano</th><th>Formador</th><th>Inscrições</th><th></th></tr>
+      </thead>
+      <tbody>
+        {% for a in acoes %}
+        <tr>
+          <td><strong>{{ a.referencia }}</strong></td>
+          <td>{{ a.local|default:"—" }}</td>
+          <td>{{ a.data_inicio|default:"—" }}</td>
+          <td>{{ a.data_fim|default:"—" }}</td>
+          <td>{{ a.ano|default:"—" }}</td>
+          <td>{{ a.formador|default:"—" }}</td>
+          <td><span class="badge bg-primary">{{ a.n_inscricoes }}</span></td>
+          <td><a href="{% url 'formacao:acao_detalhe' a.pk %}" class="btn btn-sm btn-outline-primary">Ver</a></td>
+        </tr>
+        {% empty %}
+        <tr><td colspan="8" class="text-center text-muted py-4">Nenhuma ação encontrada.</td></tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+  {% with page_obj=acoes %}{% include "includes/pagination.html" %}{% endwith %}
+</div>
+{% endblock %}

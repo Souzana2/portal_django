@@ -1,0 +1,100 @@
+{% extends "base.html" %}
+{% block title %}{{ formando.nome }} — Earth Consulters{% endblock %}
+{% block page_title %}{{ formando.nome }}{% endblock %}
+{% block content %}
+<div class="row g-3">
+  <div class="col-md-4">
+    <!-- Dados Pessoais -->
+    <div class="data-card mb-3">
+      <div class="data-card-header">
+        <h6><i class="bi bi-person me-2"></i>Dados Pessoais</h6>
+        <a href="{% url 'entidades:formando_editar' formando.pk %}" class="btn btn-sm btn-outline-primary">Editar</a>
+      </div>
+      <div style="padding:22px">
+        <dl class="row mb-0">
+          <dt class="col-5 text-muted small">NIF</dt><dd class="col-7"><code>{{ formando.nif|default:"—" }}</code></dd>
+          <dt class="col-5 text-muted small">Empresa</dt><dd class="col-7">{{ formando.empresa|default:"—" }}</dd>
+          <dt class="col-5 text-muted small">Email</dt><dd class="col-7">{{ formando.email|default:"—" }}</dd>
+          <dt class="col-5 text-muted small">Telefone</dt><dd class="col-7">{{ formando.telefone|default:"—" }}</dd>
+          <dt class="col-5 text-muted small">Localidade</dt><dd class="col-7">{{ formando.localidade|default:"—" }}</dd>
+        </dl>
+      </div>
+    </div>
+
+    <!-- Machine Learning: Recomendações -->
+    {% if recomendacao %}
+    <div class="data-card border-success shadow-sm">
+      <div class="data-card-header bg-success text-white">
+        <h6 class="mb-0"><i class="bi bi-stars me-2"></i>Próxima Venda Sugerida</h6>
+      </div>
+      <div style="padding:22px">
+        <div class="d-flex align-items-center mb-3">
+          <div class="flex-shrink-0">
+            <span class="badge bg-success rounded-pill" style="font-size: 1.2rem;">{{ recomendacao.score_confianca|floatformat:0 }}%</span>
+          </div>
+          <div class="flex-grow-1 ms-3">
+            <small class="text-muted d-block">Curso Recomendado:</small>
+            <strong class="text-dark">{{ recomendacao.curso_sugerido.nome }}</strong>
+          </div>
+        </div>
+        <p class="small text-muted mb-0">Algoritmo de Cross-Selling: Este formando tem alta probabilidade de se interessar por este curso após concluir os anteriores.</p>
+      </div>
+    </div>
+    {% endif %}
+  </div>
+
+  <div class="col-md-8">
+    <div class="data-card">
+      <div class="data-card-header">
+        <h6><i class="bi bi-clock-history me-2"></i>Histórico de Inscrições ({{ inscricoes.paginator.count }})</h6>
+        <a href="?export=xlsx" class="btn btn-sm btn-success">
+          <i class="bi bi-file-earmark-excel me-1"></i>Exportar
+        </a>
+      </div>
+      <div class="table-responsive">
+        <table class="table table-hover mb-0">
+          <thead><tr><th>Ação</th><th>Estado</th><th>IA Risk</th><th>Nº Cert.</th></tr></thead>
+          <tbody>
+            {% for i in inscricoes %}
+            <tr>
+              <td><a href="{% url 'formacao:acao_detalhe' i.acao.pk %}">{{ i.acao.referencia }}</a></td>
+              <td>
+                {% if i.estado_profissional == 'Certificado' %}
+                  <span class="badge badge-estado badge-cert">✓ Certificado</span>
+                {% elif i.estado_profissional == 'Desistente' %}
+                  <span class="badge badge-estado badge-desist">✕ Desistente</span>
+                {% elif i.estado_profissional == 'Falta doc' %}
+                  <span class="badge badge-estado badge-falta">⚠ Falta doc</span>
+                {% elif i.estado_profissional == 'Pendente' %}
+                  <span class="badge badge-estado badge-pend">Pendente</span>
+                {% else %}
+                  <span class="text-muted small">—</span>
+                {% endif %}
+              </td>
+              <td>
+                {% if i.previsao_churn %}
+                  {% if i.previsao_churn.probabilidade_desistencia > 70 %}
+                    <span class="badge bg-danger animate-pulse" title="{{ i.previsao_churn.principais_fatores }}">
+                      <i class="bi bi-exclamation-triangle-fill me-1"></i>{{ i.previsao_churn.probabilidade_desistencia }}%
+                    </span>
+                  {% elif i.previsao_churn.probabilidade_desistencia > 40 %}
+                    <span class="badge bg-warning text-dark">{{ i.previsao_churn.probabilidade_desistencia }}%</span>
+                  {% else %}
+                    <span class="badge bg-info">{{ i.previsao_churn.probabilidade_desistencia }}%</span>
+                  {% endif %}
+                {% else %}
+                  <span class="text-muted">—</span>
+                {% endif %}
+              </td>
+              <td>{{ i.numero_certificado|default:"—" }}</td>
+            </tr>
+            {% empty %}
+            <tr><td colspan="4" class="text-center text-muted py-3">Sem inscrições.</td></tr>
+            {% endfor %}
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}

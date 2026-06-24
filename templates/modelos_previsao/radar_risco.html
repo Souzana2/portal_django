@@ -1,0 +1,74 @@
+{% extends "base.html" %}
+{% block title %}Radar de Risco IA — Earth Consulters{% endblock %}
+{% block page_title %}Radar de Risco (Inteligência Artificial){% endblock %}
+{% block content %}
+<div class="alert alert-info border-0 shadow-sm mb-4">
+  <i class="bi bi-info-circle-fill me-2"></i>
+  Esta lista exibe os formandos com maior probabilidade de desistência, calculada pelo motor analítico. 
+  <strong>Prioridade:</strong> Ligue para os formandos no topo da lista para garantir a retenção.
+</div>
+
+<div class="data-card">
+  <div class="data-card-header">
+    <h6><i class="bi bi-lightning-charge-fill me-2 text-warning"></i>Lista de Alerta Prioritária</h6>
+    <span class="badge bg-secondary">{{ riscos|length }} casos em risco elevado</span>
+  </div>
+  <div class="table-responsive">
+    <table class="table table-hover align-middle mb-0">
+      <thead class="table-light">
+        <tr>
+          <th>Probabilidade</th>
+          <th>Formando</th>
+          <th>Telefone</th>
+          <th>Fatores de Risco</th>
+          <th class="text-end">Ações</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for i in riscos %}
+        <tr>
+          <td>
+            <div class="d-flex align-items-center">
+              <div class="progress flex-grow-1 me-2" style="height: 8px; min-width: 60px;">
+                <div class="progress-bar {% if i.previsao_churn.probabilidade_desistencia > 75 %}bg-danger{% elif i.previsao_churn.probabilidade_desistencia > 50 %}bg-warning{% else %}bg-info{% endif %}" 
+                     role="progressbar" 
+                     style="width: {{ i.previsao_churn.probabilidade_desistencia }}%"></div>
+              </div>
+              <strong class="{% if i.previsao_churn.probabilidade_desistencia > 75 %}text-danger{% endif %}">
+                {{ i.previsao_churn.probabilidade_desistencia|floatformat:1 }}%
+              </strong>
+            </div>
+          </td>
+          <td>
+            <a href="{% url 'entidades:formando_detalhe' i.formando.pk %}" class="fw-bold d-block">
+              {{ i.formando.nome }}
+            </a>
+            <small class="text-muted">{{ i.formando.nif|default:"Sem NIF" }}</small>
+          </td>
+          <td>
+            <a href="tel:{{ i.formando.telefone }}" class="text-decoration-none">
+              <i class="bi bi-telephone me-1"></i>{{ i.formando.telefone|default:"—" }}
+            </a>
+          </td>
+          <td>
+            <span class="small text-muted">{{ i.previsao_churn.principais_fatores }}</span>
+          </td>
+          <td class="text-end">
+            <a href="{% url 'entidades:formando_detalhe' i.formando.pk %}" class="btn btn-sm btn-outline-primary">
+              Ver Perfil
+            </a>
+          </td>
+        </tr>
+        {% empty %}
+        <tr>
+          <td colspan="5" class="text-center py-5">
+            <i class="bi bi-shield-check text-success display-4 d-block mb-3"></i>
+            <p class="text-muted">Nenhum risco elevado detetado no momento.</p>
+          </td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+</div>
+{% endblock %}

@@ -1,0 +1,169 @@
+{% extends "base.html" %}
+{% block title %}Dashboard — Earth Consulters{% endblock %}
+{% block page_title %}Dashboard{% endblock %}
+
+{% block content %}
+<!-- KPIs -->
+<div class="row g-3 mb-4">
+  <div class="col-sm-6 col-md-4 col-xl">
+    <div class="kpi-card">
+      <div class="kpi-icon" style="background:linear-gradient(135deg,#2e7dd1,#1a5fa8)">
+        <i class="bi bi-journal-check"></i>
+      </div>
+      <div>
+        <div class="kpi-value">{{ total_inscricoes|default:"0" }}</div>
+        <div class="kpi-label">Inscrições</div>
+      </div>
+    </div>
+  </div>
+  <div class="col-sm-6 col-md-4 col-xl">
+    <div class="kpi-card">
+      <div class="kpi-icon" style="background:linear-gradient(135deg,#27ae60,#1e8449)">
+        <i class="bi bi-calendar-event"></i>
+      </div>
+      <div>
+        <div class="kpi-value">{{ total_acoes|default:"0" }}</div>
+        <div class="kpi-label">Ações</div>
+      </div>
+    </div>
+  </div>
+  <div class="col-sm-6 col-md-4 col-xl">
+    <div class="kpi-card">
+      <div class="kpi-icon" style="background:linear-gradient(135deg,#8e44ad,#6c3483)">
+        <i class="bi bi-people"></i>
+      </div>
+      <div>
+        <div class="kpi-value">{{ total_formandos|default:"0" }}</div>
+        <div class="kpi-label">Formandos</div>
+      </div>
+    </div>
+  </div>
+  <div class="col-sm-6 col-md-4 col-xl">
+    <div class="kpi-card">
+      <div class="kpi-icon" style="background:linear-gradient(135deg,#0d2137,#1a3c5e)">
+        <i class="bi bi-person-badge"></i>
+      </div>
+      <div>
+        <div class="kpi-value">{{ total_formadores|default:"0" }}</div>
+        <div class="kpi-label">Formadores</div>
+      </div>
+    </div>
+  </div>
+  <div class="col-sm-6 col-md-4 col-xl">
+    <div class="kpi-card">
+      <div class="kpi-icon" style="background:linear-gradient(135deg,#e67e22,#ca6f1e)">
+        <i class="bi bi-building"></i>
+      </div>
+      <div>
+        <div class="kpi-value">{{ total_empresas|default:"0" }}</div>
+        <div class="kpi-label">Empresas</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Gráficos -->
+<div class="row g-3 mb-4">
+  <div class="col-lg-7">
+    <div class="data-card">
+      <div class="data-card-header">
+        <h6><i class="bi bi-bar-chart me-2"></i>Inscrições por Ano</h6>
+      </div>
+      <div style="padding:20px">
+        <canvas id="chartAnos" height="120"></canvas>
+      </div>
+    </div>
+  </div>
+  <div class="col-lg-5">
+    <div class="data-card">
+      <div class="data-card-header">
+        <h6><i class="bi bi-pie-chart me-2"></i>Estado Profissional</h6>
+      </div>
+      <div style="padding:20px">
+        <canvas id="chartEstados" height="160"></canvas>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Últimas Inscrições -->
+<div class="data-card">
+  <div class="data-card-header">
+    <h6><i class="bi bi-clock-history me-2"></i>Últimas Inscrições Registadas</h6>
+    <a href="{% url 'formacao:inscricao_lista' %}" class="btn btn-sm btn-outline-primary">Ver todas</a>
+  </div>
+  <div class="table-responsive">
+    <table class="table table-hover">
+      <thead>
+        <tr><th>Formando</th><th>Ação</th><th>Empresa</th><th>Estado</th><th class="text-end">Ações</th></tr>
+      </thead>
+      <tbody>
+        {% for i in ultimas %}
+        <tr>
+          <td><strong>{{ i.formando.nome }}</strong></td>
+          <td>{{ i.acao.referencia }}</td>
+          <td><small>{{ i.empresa|default:"—" }}</small></td>
+          <td>
+            {% if i.estado_profissional == 'Certificado' %}
+              <span class="badge badge-estado badge-cert">✓ Certificado</span>
+            {% elif i.estado_profissional == 'Desistente' %}
+              <span class="badge badge-estado badge-desist">✕ Desistente</span>
+            {% elif i.estado_profissional == 'Falta doc' %}
+              <span class="badge badge-estado badge-falta">⚠ Falta doc</span>
+            {% elif i.estado_profissional == 'Pendente' %}
+              <span class="badge badge-estado badge-pend">Pendente</span>
+            {% else %}
+              <span class="text-muted small">—</span>
+            {% endif %}
+          </td>
+          <td class="text-end">
+            <a href="{% url 'entidades:formando_detalhe' i.formando.pk %}" class="btn btn-xs btn-outline-primary" title="Ver Formando">
+              <i class="bi bi-person"></i>
+            </a>
+            <a href="{% url 'formacao:inscricao_editar' i.pk %}" class="btn btn-xs btn-outline-secondary" title="Editar Inscrição">
+              <i class="bi bi-pencil"></i>
+            </a>
+          </td>
+        </tr>
+        {% empty %}
+        <tr><td colspan="6" class="text-center text-muted py-4">Sem inscrições registadas.</td></tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+const anos = {{ anos_labels|safe }};
+const anosData = {{ anos_data|safe }};
+const estLabels = {{ estados_labels|safe }};
+const estData = {{ estados_data|safe }};
+
+new Chart(document.getElementById('chartAnos'), {
+  type: 'bar',
+  data: {
+    labels: anos,
+    datasets: [{ label: 'Inscrições', data: anosData,
+      backgroundColor: '#2e7dd1', borderRadius: 6, borderSkipped: false }]
+  },
+  options: {
+    responsive: true, plugins: { legend: { display: false } },
+    scales: { y: { beginAtZero: true, grid: { color: '#f0f0f0' } },
+              x: { grid: { display: false } } }
+  }
+});
+
+new Chart(document.getElementById('chartEstados'), {
+  type: 'doughnut',
+  data: {
+    labels: estLabels,
+    datasets: [{ data: estData,
+      backgroundColor: ['#27ae60','#e74c3c','#f39c12','#2e7dd1'],
+      borderWidth: 2, borderColor: '#fff' }]
+  },
+  options: { responsive: true, plugins: { legend: { position: 'bottom' } }, cutout: '65%' }
+});
+</script>
+{% endblock %}

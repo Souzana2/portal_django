@@ -1,0 +1,39 @@
+{% if is_paginated %}
+<nav aria-label="Navegação de página" class="mt-4">
+  <ul class="pagination justify-content-center">
+    {% if page_obj.has_previous %}
+      <li class="page-item">
+        <a class="page-link" href="?page=1{% if request.GET.q %}&q={{ request.GET.q }}{% endif %}{% if request.GET.ano %}&ano={{ request.GET.ano }}{% endif %}{% if request.GET.estado %}&estado={{ request.GET.estado }}{% endif %}{% if request.GET.pagamento %}&pagamento={{ request.GET.pagamento }}{% endif %}" aria-label="Primeira">
+          <span aria-hidden="true">&laquo;&laquo;</span>
+        </a>
+      </li>
+      <li class="page-item">
+        <a class="page-link" href="?page={{ page_obj.previous_page_number }}{% if request.GET.q %}&q={{ request.GET.q }}{% endif %}{% if request.GET.ano %}&ano={{ request.GET.ano }}{% endif %}{% if request.GET.estado %}&estado={{ request.GET.estado }}{% endif %}{% if request.GET.pagamento %}&pagamento={{ request.GET.pagamento }}{% endif %}" aria-label="Anterior">
+          <span aria-hidden="true">&laquo;</span>
+        </a>
+      </li>
+    {% else %}
+      <li class="page-item disabled"><span class="page-link">&laquo;&laquo;</span></li>
+      <li class="page-item disabled"><span class="page-link">&laquo;</span></li>
+    {% endif %}
+
+    <li class="page-item active"><span class="page-link">Página {{ page_obj.number }} de {{ page_obj.paginator.num_pages }}</span></li>
+
+    {% if page_obj.has_next %}
+      <li class="page-item">
+        <a class="page-link" href="?page={{ page_obj.next_page_number }}{% if request.GET.q %}&q={{ request.GET.q }}{% endif %}{% if request.GET.ano %}&ano={{ request.GET.ano }}{% endif %}{% if request.GET.estado %}&estado={{ request.GET.estado }}{% endif %}{% if request.GET.pagamento %}&pagamento={{ request.GET.pagamento }}{% endif %}" aria-label="Próxima">
+          <span aria-hidden="true">&raquo;</span>
+        </a>
+      </li>
+      <li class="page-item">
+        <a class="page-link" href="?page={{ page_obj.paginator.num_pages }}{% if request.GET.q %}&q={{ request.GET.q }}{% endif %}{% if request.GET.ano %}&ano={{ request.GET.ano }}{% endif %}{% if request.GET.estado %}&estado={{ request.GET.estado }}{% endif %}{% if request.GET.pagamento %}&pagamento={{ request.GET.pagamento }}{% endif %}" aria-label="Última">
+          <span aria-hidden="true">&raquo;&raquo;</span>
+        </a>
+      </li>
+    {% else %}
+      <li class="page-item disabled"><span class="page-link">&raquo;</span></li>
+      <li class="page-item disabled"><span class="page-link">&raquo;&raquo;</span></li>
+    {% endif %}
+  </ul>
+</nav>
+{% endif %}

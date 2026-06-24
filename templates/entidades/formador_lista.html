@@ -1,0 +1,47 @@
+{% extends "base.html" %}
+{% block title %}Formadores — Earth Consulters{% endblock %}
+{% block page_title %}Formadores{% endblock %}
+{% block content %}
+<form method="get" class="filter-bar">
+  <div>
+    <label class="form-label small fw-semibold mb-1">Pesquisar</label>
+    <input type="search" name="q" class="form-control" value="{{ q }}" placeholder="Nome ou email..." style="width:260px">
+  </div>
+  <button type="submit" class="btn btn-primary"><i class="bi bi-funnel me-1"></i>Filtrar</button>
+  <a href="?{{ request.GET.urlencode }}&export=xlsx" class="btn btn-success">
+    <i class="bi bi-file-earmark-excel me-1"></i>Exportar Excel
+  </a>
+  <a href="{% url 'entidades:formador_criar' %}" class="btn btn-outline-primary ms-auto">
+    <i class="bi bi-plus-lg me-1"></i>Novo Formador
+  </a>
+</form>
+
+<div class="data-card">
+  <div class="data-card-header">
+    <h6><i class="bi bi-person-badge me-2"></i>Formadores <span class="text-muted small ms-1">({{ total }})</span></h6>
+  </div>
+  <div class="table-responsive">
+    <table class="table table-hover">
+      <thead><tr><th>Nome</th><th>Código</th><th>Telefone</th><th>Email</th><th>Ações</th><th></th></tr></thead>
+      <tbody>
+        {% for f in formadores %}
+        <tr>
+          <td><strong>{{ f.nome }}</strong></td>
+          <td>{{ f.codigo|default:"—" }}</td>
+          <td>{{ f.telefone1|default:"—" }}</td>
+          <td>{{ f.email1|default:"—" }}</td>
+          <td><span class="badge bg-secondary">{{ f.total_acoes }} ações</span></td>
+          <td>
+            <a href="{% url 'entidades:formador_detalhe' f.pk %}" class="btn btn-sm btn-outline-primary me-1">Ver</a>
+            <a href="{% url 'entidades:formador_editar' f.pk %}" class="btn btn-sm btn-outline-secondary">Editar</a>
+          </td>
+        </tr>
+        {% empty %}
+        <tr><td colspan="6" class="text-center text-muted py-4">Nenhum formador encontrado.</td></tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+  {% with page_obj=formadores %}{% include "includes/pagination.html" %}{% endwith %}
+</div>
+{% endblock %}

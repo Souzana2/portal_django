@@ -1,0 +1,50 @@
+{% extends "base.html" %}
+{% block title %}{{ formador.nome }} — Earth Consulters{% endblock %}
+{% block page_title %}{{ formador.nome }}{% endblock %}
+{% block content %}
+<div class="row g-3">
+  <div class="col-md-4">
+    <div class="data-card">
+      <div class="data-card-header">
+        <h6><i class="bi bi-person-badge me-2"></i>Ficha do Formador</h6>
+        <a href="{% url 'entidades:formador_editar' formador.pk %}" class="btn btn-sm btn-outline-primary">Editar</a>
+      </div>
+      <div style="padding:22px">
+        <dl class="row mb-0">
+          <dt class="col-5 text-muted small">Código</dt><dd class="col-7">{{ formador.codigo|default:"—" }}</dd>
+          <dt class="col-5 text-muted small">Telefone 1</dt><dd class="col-7">{{ formador.telefone1|default:"—" }}</dd>
+          <dt class="col-5 text-muted small">Telefone 2</dt><dd class="col-7">{{ formador.telefone2|default:"—" }}</dd>
+          <dt class="col-5 text-muted small">Email 1</dt><dd class="col-7">{{ formador.email1|default:"—" }}</dd>
+          <dt class="col-5 text-muted small">Email 2</dt><dd class="col-7">{{ formador.email2|default:"—" }}</dd>
+          <dt class="col-5 text-muted small">Morada</dt><dd class="col-7">{{ formador.morada|default:"—" }}</dd>
+        </dl>
+      </div>
+    </div>
+  </div>
+  <div class="col-md-8">
+    <div class="data-card">
+      <div class="data-card-header">
+        <h6><i class="bi bi-calendar-event me-2"></i>Ações Lecionadas ({{ acoes|length }})</h6>
+      </div>
+      <div class="table-responsive">
+        <table class="table table-hover mb-0">
+          <thead><tr><th>Referência</th><th>Curso</th><th>Local</th><th>Ano</th><th></th></tr></thead>
+          <tbody>
+            {% for a in acoes %}
+            <tr>
+              <td><strong>{{ a.referencia }}</strong></td>
+              <td>{{ a.curso|default:"—" }}</td>
+              <td>{{ a.local|default:"—" }}</td>
+              <td>{{ a.ano|default:"—" }}</td>
+              <td><a href="{% url 'formacao:acao_detalhe' a.pk %}" class="btn btn-sm btn-outline-primary">Ver</a></td>
+            </tr>
+            {% empty %}
+            <tr><td colspan="5" class="text-center text-muted py-3">Nenhuma ação registada.</td></tr>
+            {% endfor %}
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}

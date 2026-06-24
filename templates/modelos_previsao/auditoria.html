@@ -1,0 +1,58 @@
+{% extends "base.html" %}
+{% block title %}Auditoria de Encerramento — Earth Consulters{% endblock %}
+{% block page_title %}Auditoria de Encerramento{% endblock %}
+
+{% block content %}
+<div class="alert alert-warning border-0 shadow-sm mb-4">
+  <i class="bi bi-exclamation-triangle-fill me-2"></i>
+  Esta lista exibe inscrições pendentes em ações de anos anteriores (antigas). 
+  <strong>Objetivo:</strong> Regularizar estes processos para permitir o fecho administrativo das turmas.
+</div>
+
+<div class="data-card">
+  <div class="data-card-header">
+    <h6><i class="bi bi-clipboard-check me-2"></i>Pendências por Regularizar</h6>
+    <span class="badge bg-danger">{{ pendencias.paginator.count }} pendências críticas</span>
+  </div>
+  <div class="table-responsive">
+    <table class="table table-hover align-middle mb-0">
+      <thead>
+        <tr>
+          <th>Ano</th>
+          <th>Ação</th>
+          <th>Formando</th>
+          <th>Estado Atual</th>
+          <th>Empresa</th>
+          <th class="text-end">Ações</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for p in pendencias %}
+        <tr>
+          <td><span class="badge bg-light text-dark">{{ p.acao.ano }}</span></td>
+          <td><strong>{{ p.acao.referencia }}</strong></td>
+          <td>{{ p.formando.nome }}</td>
+          <td>
+            <span class="badge badge-estado badge-falta">{{ p.estado_profissional }}</span>
+          </td>
+          <td>{{ p.empresa|default:"—" }}</td>
+          <td class="text-end">
+            <a href="{% url 'formacao:inscricao_editar' p.pk %}" class="btn btn-sm btn-outline-primary">
+              Regularizar
+            </a>
+          </td>
+        </tr>
+        {% empty %}
+        <tr>
+          <td colspan="6" class="text-center py-5">
+            <i class="bi bi-check-circle text-success display-4 d-block mb-3"></i>
+            <p class="text-muted">Excelente! Nenhuma pendência antiga detetada.</p>
+          </td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+  {% with page_obj=pendencias %}{% include "includes/pagination.html" %}{% endwith %}
+</div>
+{% endblock %}

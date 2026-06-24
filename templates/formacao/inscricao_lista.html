@@ -1,0 +1,90 @@
+{% extends "base.html" %}
+{% block title %}Inscrições — Earth Consulters{% endblock %}
+{% block page_title %}Inscrições{% endblock %}
+{% block content %}
+<form method="get" class="filter-bar">
+  <div>
+    <label class="form-label small fw-semibold mb-1">Pesquisar</label>
+    <input type="search" name="q" class="form-control" value="{{ q }}" placeholder="Nome, NIF ou ref. ação..." style="width:240px">
+  </div>
+  <div>
+    <label class="form-label small fw-semibold mb-1">Ano</label>
+    <select name="ano" class="form-select" style="width:110px">
+      <option value="">Todos</option>
+      {% for a in anos %}<option value="{{ a }}" {% if a == ano %}selected{% endif %}>{{ a }}</option>{% endfor %}
+    </select>
+  </div>
+  <div>
+    <label class="form-label small fw-semibold mb-1">Estado Prof.</label>
+    <select name="estado" class="form-select" style="width:150px">
+      <option value="">Todos</option>
+      {% for e in ESTADOS %}<option value="{{ e }}" {% if e == estado %}selected{% endif %}>{{ e }}</option>{% endfor %}
+    </select>
+  </div>
+  <div>
+    <label class="form-label small fw-semibold mb-1">Pagamento</label>
+    <select name="pagamento" class="form-select" style="width:130px">
+      <option value="">Todos</option>
+      {% for p in PAGAMENTOS %}<option value="{{ p }}" {% if p == pagamento %}selected{% endif %}>{{ p }}</option>{% endfor %}
+    </select>
+  </div>
+  <button type="submit" class="btn btn-primary"><i class="bi bi-funnel me-1"></i>Filtrar</button>
+  <a href="?{{ request.GET.urlencode }}&export=xlsx" class="btn btn-success">
+    <i class="bi bi-file-earmark-excel me-1"></i>Exportar
+  </a>
+  <a href="?{{ request.GET.urlencode }}&export=async" class="btn btn-dark" title="Recomendado para grandes volumes">
+    <i class="bi bi-cpu me-1"></i>Exportação Inteligente (Beta)
+  </a>
+  <a href="{% url 'formacao:inscricao_criar' %}" class="btn btn-outline-primary ms-auto">
+    <i class="bi bi-plus-lg me-1"></i>Nova Inscrição
+  </a>
+</form>
+
+<div class="data-card">
+  <div class="data-card-header">
+    <h6><i class="bi bi-journal-check me-2"></i>Inscrições <span class="text-muted small ms-1">({{ total }})</span></h6>
+  </div>
+  <div class="table-responsive">
+    <table class="table table-hover">
+      <thead>
+        <tr><th>Formando</th><th>NIF</th><th>Empresa</th><th>Ação</th><th>Ano</th><th>Estado</th><th>Pagamento</th><th></th></tr>
+      </thead>
+      <tbody>
+        {% for i in inscricoes %}
+        <tr>
+          <td><a href="{% url 'entidades:formando_detalhe' i.formando.pk %}">{{ i.formando.nome }}</a></td>
+          <td><code>{{ i.formando.nif|default:"—" }}</code></td>
+          <td>{{ i.empresa|default:"—" }}</td>
+          <td><a href="{% url 'formacao:acao_detalhe' i.acao.pk %}">{{ i.acao.referencia }}</a></td>
+          <td>{{ i.acao.ano|default:"—" }}</td>
+          <td>
+            {% if i.estado_profissional == 'Certificado' %}
+              <span class="badge badge-estado badge-cert">✓ Certificado</span>
+            {% elif i.estado_profissional == 'Desistente' %}
+              <span class="badge badge-estado badge-desist">✕ Desistente</span>
+            {% elif i.estado_profissional == 'Falta doc' %}
+              <span class="badge badge-estado badge-falta">⚠ Falta doc</span>
+            {% elif i.estado_profissional == 'Pendente' %}
+              <span class="badge badge-estado badge-pend">Pendente</span>
+            {% else %}
+              <span class="text-muted small">—</span>
+            {% endif %}
+          </td>
+          <td>
+            {% if i.estado_pagamento == 'Pago' %}
+              <span class="badge badge-estado badge-pago">Pago</span>
+            {% else %}
+              <span class="badge badge-estado badge-pend">Pendente</span>
+            {% endif %}
+          </td>
+          <td><a href="{% url 'formacao:inscricao_editar' i.pk %}" class="btn btn-sm btn-outline-secondary">Editar</a></td>
+        </tr>
+        {% empty %}
+        <tr><td colspan="8" class="text-center text-muted py-4">Nenhuma inscrição encontrada.</td></tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+  {% with page_obj=inscricoes %}{% include "includes/pagination.html" %}{% endwith %}
+</div>
+{% endblock %}

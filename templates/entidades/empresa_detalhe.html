@@ -1,0 +1,46 @@
+{% extends "base.html" %}
+{% block title %}{{ empresa.nome }} — Earth Consulters{% endblock %}
+{% block page_title %}{{ empresa.nome }}{% endblock %}
+{% block content %}
+<div class="row g-3 mb-4">
+  <div class="col-md-5">
+    <div class="data-card h-100">
+      <div class="data-card-header">
+        <h6><i class="bi bi-building me-2"></i>Dados da Empresa</h6>
+        <a href="{% url 'entidades:empresa_editar' empresa.pk %}" class="btn btn-sm btn-outline-primary">Editar</a>
+      </div>
+      <div style="padding:22px">
+        <dl class="row mb-0">
+          <dt class="col-5 text-muted small">NIF</dt><dd class="col-7"><code>{{ empresa.nif }}</code></dd>
+          <dt class="col-5 text-muted small">Morada</dt><dd class="col-7">{{ empresa.morada|default:"—" }}</dd>
+          <dt class="col-5 text-muted small">Código Postal</dt><dd class="col-7">{{ empresa.codigo_postal|default:"—" }}</dd>
+          <dt class="col-5 text-muted small">Localidade</dt><dd class="col-7">{{ empresa.localidade|default:"—" }}</dd>
+        </dl>
+      </div>
+    </div>
+  </div>
+  <div class="col-md-7">
+    <div class="data-card h-100">
+      <div class="data-card-header">
+        <h6><i class="bi bi-people me-2"></i>Formandos ({{ formandos.paginator.count }})</h6>
+      </div>
+      <div class="table-responsive">
+        <table class="table table-hover mb-0">
+          <thead><tr><th>Nome</th><th>NIF</th><th></th></tr></thead>
+          <tbody>
+            {% for f in formandos %}
+            <tr>
+              <td>{{ f.nome }}</td>
+              <td><code>{{ f.nif|default:"—" }}</code></td>
+              <td><a href="{% url 'entidades:formando_detalhe' f.pk %}" class="btn btn-sm btn-outline-primary">Ver</a></td>
+            </tr>
+            {% empty %}
+            <tr><td colspan="3" class="text-center text-muted py-3">Nenhum formando associado.</td></tr>
+            {% endfor %}
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}
