@@ -1,0 +1,60 @@
+{% extends "base.html" %}
+{% block title %}Cursos — Earth Consulters{% endblock %}
+{% block page_title %}Cursos{% endblock %}
+{% block content %}
+<form method="get" class="filter-bar">
+  <div>
+    <label class="form-label small fw-semibold mb-1">Pesquisar</label>
+    <input type="search" name="q" class="form-control" value="{{ q }}" placeholder="Código ou nome do curso..." style="width:260px">
+  </div>
+  <div>
+    <label class="form-label small fw-semibold mb-1">Área de Formação</label>
+    <input type="search" name="area" class="form-control" value="{{ area }}" placeholder="Área..." style="width:200px">
+  </div>
+  <button type="submit" class="btn btn-primary"><i class="bi bi-funnel me-1"></i>Filtrar</button>
+  <a href="?{{ request.GET.urlencode }}&export=xlsx" class="btn btn-success">
+    <i class="bi bi-file-earmark-excel me-1"></i>Exportar Excel
+  </a>
+  <a href="{% url 'entidades:curso_criar' %}" class="btn btn-outline-primary ms-auto">
+    <i class="bi bi-plus-lg me-1"></i>Novo Curso
+  </a>
+</form>
+
+<div class="data-card">
+  <div class="data-card-header">
+    <h6><i class="bi bi-journal-text me-2"></i>Cursos <span class="text-muted small ms-1">({{ total }})</span></h6>
+  </div>
+  <div class="table-responsive">
+    <table class="table table-hover">
+      <thead>
+        <tr>
+          <th>Código</th>
+          <th>Nome</th>
+          <th>Cód. Área</th>
+          <th>Área de Formação</th>
+          <th>Total Ações</th>
+          <th>Ações</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for c in cursos %}
+        <tr>
+          <td><strong>{{ c.codigo }}</strong></td>
+          <td>{{ c.nome }}</td>
+          <td>{{ c.area_codigo|default:"—" }}</td>
+          <td>{{ c.area_nome|default:"—" }}</td>
+          <td><span class="badge bg-secondary">{{ c.total_acoes }} ações</span></td>
+          <td>
+            <a href="{% url 'entidades:curso_detalhe' c.pk %}" class="btn btn-sm btn-outline-primary me-1">Ver</a>
+            <a href="{% url 'entidades:curso_editar' c.pk %}" class="btn btn-sm btn-outline-secondary">Editar</a>
+          </td>
+        </tr>
+        {% empty %}
+        <tr><td colspan="6" class="text-center text-muted py-4">Nenhum curso encontrado.</td></tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+  {% with page_obj=cursos %}{% include "includes/pagination.html" %}{% endwith %}
+</div>
+{% endblock %}

@@ -11,8 +11,8 @@ from django.core.paginator import Paginator
 from django.http import HttpResponse
 from openpyxl import Workbook
 from openpyxl.styles import Font, PatternFill, Alignment
-from .models import Empresa, Formador, Formando, Inscricao
-from .forms import EmpresaForm, FormadorForm, FormandoForm
+from .models import Empresa, Formador, Formando, Inscricao, Curso
+from .forms import EmpresaForm, FormadorForm, FormandoForm, CursoForm
 
 
 # ─── Utilitário de Export XLSX ────────────────────────────────────────────────
@@ -314,3 +314,84 @@ def formando_eliminar(request, pk):
     formando.delete()
     messages.success(request, f'Formando "{formando.nome}" eliminado.')
     return redirect('entidades:formando_lista')
+
+
+# ─── CURSOS ───────────────────────────────────────────────────────────────────
+
+@login_required
+@permission_required('entidades.view_curso', raise_exception=True)
+def curso_lista(request):
+    q = request.GET.get('q', '')
+    area = request.GET.get('area', '')
+    qs = Curso.objects.annotate(total_acoes=Count('acoes'))
+    if q:
+        qs = qs.filter(Q(nome__icontains=q) | Q(codigo__icontains=q))
+    if area:
+        qs = qs.filter(area_nome__icontains=area)
+
+    paginator = Paginator(qs, 50)
+    page_number = request.GET.get('page')
+    page_obj = paginator.get_page(page_number)
+
+    if request.GET.get('export') == 'xlsx':
+        cabecalhos = ['Código', 'Nome', 'Cód. Área', 'Área de Formação']
+        linhas = ((c.codigo, c.nome, c.area_codigo, c.area_nome) for c in qs.iterator(chunk_size=500))
+        return _export_xlsx('cursos', cabecalhos, linhas)
+
+    context = {
+        'cursos': page_obj,
+        'q': q,
+        'area': area,
+        'page_title': 'Cursos',
+        'total': qs.count(),
+        'is_paginated': page_obj.has_other_pages(),
+    }
+    return render(request, 'entidades/curso_lista.html', context)
+
+
+@login_required
+@permission_required('entidades.view_curso', raise_exception=True)
+def curso_detalhe(request, pk):
+    curso = get_object_or_404(Curso, pk=pk)
+    acoes = curso.acoes.select_related('formador').order_by('-ano')
+    context = {
+        'curso': curso,
+        'acoes': acoes,
+        'page_title': curso.nome,
+    }
+    return render(request, 'entidades/curso_detalhe.html', context)
+
+
+@login_required
+@permission_required('entidades.add_curso', raise_exception=True)
+@transaction.atomic
+def curso_criar(request):
+    form = CursoForm(request.POST or None)
+    if form.is_valid():
+        form.save()
+        messages.success(request, 'Curso criado com sucesso.')
+        return redirect('entidades:curso_lista')
+    return render(request, 'entidades/form.html', {'form': form, 'page_title': 'Novo Curso', 'entidade': 'Curso'})
+
+
+@login_required
+@permission_required('entidades.change_curso', raise_exception=True)
+@transaction.atomic
+def curso_editar(request, pk):
+    curso = get_object_or_404(Curso, pk=pk)
+    form = CursoForm(request.POST or None, instance=curso)
+    if form.is_valid():
+        form.save()
+        messages.success(request, 'Curso atualizado.')
+        return redirect('entidades:curso_detalhe', pk=pk)
+    return render(request, 'entidades/form.html', {'form': form, 'page_title': f'Editar {curso.nome}', 'entidade': 'Curso'})
+
+
+@login_required
+@permission_required('entidades.delete_curso', raise_exception=True)
+def curso_eliminar(request, pk):
+    curso = get_object_or_404(Curso, pk=pk)
+    curso.delete()
+    messages.success(request, f'Curso "{curso.nome}" eliminado.')
+    return redirect('entidades:curso_lista')
+

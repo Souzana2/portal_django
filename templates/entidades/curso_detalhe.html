@@ -1,0 +1,59 @@
+{% extends "base.html" %}
+{% block title %}{{ curso.nome }} — Earth Consulters{% endblock %}
+{% block page_title %}{{ curso.nome }}{% endblock %}
+{% block content %}
+<div class="row g-3">
+  <div class="col-md-4">
+    <div class="data-card mb-3">
+      <div class="data-card-header">
+        <h6><i class="bi bi-journal-text me-2"></i>Ficha do Curso</h6>
+        <div class="btn-group">
+          <a href="{% url 'entidades:curso_editar' curso.pk %}" class="btn btn-sm btn-outline-primary">Editar</a>
+          <a href="{% url 'entidades:curso_eliminar' curso.pk %}" class="btn btn-sm btn-outline-danger" onclick="return confirm('Tem a certeza que deseja eliminar este curso?');">Eliminar</a>
+        </div>
+      </div>
+      <div style="padding:22px">
+        <dl class="row mb-0">
+          <dt class="col-5 text-muted small">Código</dt><dd class="col-7"><code>{{ curso.codigo }}</code></dd>
+          <dt class="col-5 text-muted small">Área de Formação</dt><dd class="col-7">{{ curso.area_nome|default:"—" }}</dd>
+          <dt class="col-5 text-muted small">Cód. Área</dt><dd class="col-7"><code>{{ curso.area_codigo|default:"—" }}</code></dd>
+          <dt class="col-5 text-muted small">ID ETL</dt><dd class="col-7"><small class="text-muted">{{ curso.id_etl|default:"—" }}</small></dd>
+        </dl>
+      </div>
+    </div>
+  </div>
+  <div class="col-md-8">
+    <div class="data-card">
+      <div class="data-card-header">
+        <h6><i class="bi bi-calendar-event me-2"></i>Ações / Turmas Associadas ({{ acoes|length }})</h6>
+      </div>
+      <div class="table-responsive">
+        <table class="table table-hover mb-0">
+          <thead>
+            <tr>
+              <th>Referência</th>
+              <th>Local</th>
+              <th>Período</th>
+              <th>Ano</th>
+              <th></th>
+            </tr>
+          </thead>
+          <tbody>
+            {% for a in acoes %}
+            <tr>
+              <td><strong>{{ a.referencia }}</strong></td>
+              <td>{{ a.local|default:"—" }}</td>
+              <td>{{ a.data_inicio|default:"—" }} a {{ a.data_fim|default:"—" }}</td>
+              <td>{{ a.ano|default:"—" }}</td>
+              <td><a href="{% url 'formacao:acao_detalhe' a.pk %}" class="btn btn-sm btn-outline-primary">Ver</a></td>
+            </tr>
+            {% empty %}
+            <tr><td colspan="5" class="text-center text-muted py-3">Nenhuma ação registada para este curso.</td></tr>
+            {% endfor %}
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}

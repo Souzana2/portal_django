@@ -2,7 +2,7 @@
 from django import forms
 from crispy_forms.helper import FormHelper
 from crispy_forms.layout import Layout, Row, Column, Submit, Field
-from .models import Empresa, Formador, Formando, Acao, Inscricao
+from .models import Empresa, Formador, Formando, Acao, Inscricao, Curso
 
 
 class EmpresaForm(forms.ModelForm):
@@ -141,3 +141,28 @@ class InscricaoForm(forms.ModelForm):
             if qs.exists():
                 raise forms.ValidationError('Este formando já está inscrito nesta ação.')
         return cleaned_data
+
+
+class CursoForm(forms.ModelForm):
+    class Meta:
+        model = Curso
+        fields = ['codigo', 'nome', 'area_codigo', 'area_nome']
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.helper = FormHelper()
+        self.helper.layout = Layout(
+            Row(Column('codigo', css_class='col-md-4'), Column('nome', css_class='col-md-8')),
+            Row(Column('area_codigo', css_class='col-md-4'), Column('area_nome', css_class='col-md-8')),
+            Submit('submit', 'Guardar', css_class='btn btn-primary'),
+        )
+
+    def clean_codigo(self):
+        codigo = self.cleaned_data.get('codigo')
+        if codigo:
+            qs = Curso.objects.filter(codigo=codigo)
+            if self.instance.pk:
+                qs = qs.exclude(pk=self.instance.pk)
+            if qs.exists():
+                raise forms.ValidationError('Já existe um curso ativo com este código.')
+        return codigo

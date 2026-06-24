@@ -1,4 +1,4 @@
-﻿"""
+"""
 Comando de seed para dados de demonstraÃ§Ã£o genÃ©ricos.
 
 Uso:

@@ -207,12 +207,16 @@
   </a>
 
   <div class="nav-section">Formação</div>
-  <a href="{% url 'formacao:acao_lista' %}" class="nav-link">
+  <a href="{% url 'formacao:acao_lista' %}" class="nav-link {% if 'acoes' in request.path %}active{% endif %}">
     <i class="bi bi-calendar-event"></i> Ações / Turmas
   </a>
-  <a href="{% url 'formacao:inscricao_lista' %}" class="nav-link">
+  <a href="{% url 'entidades:curso_lista' %}" class="nav-link {% if 'cursos' in request.path %}active{% endif %}">
+    <i class="bi bi-journal-text"></i> Cursos
+  </a>
+  <a href="{% url 'formacao:inscricao_lista' %}" class="nav-link {% if 'inscricoes' in request.path %}active{% endif %}">
     <i class="bi bi-journal-check"></i> Inscrições
   </a>
+
 
   <div class="nav-section">Inteligência (IA)</div>
   <a href="{% url 'modelos_previsao:radar_risco' %}" class="nav-link {% if 'radar-risco' in request.path %}active{% endif %}">

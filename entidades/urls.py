@@ -22,4 +22,11 @@ urlpatterns = [
     path('formandos/<int:pk>/', views.formando_detalhe, name='formando_detalhe'),
     path('formandos/<int:pk>/editar/', views.formando_editar, name='formando_editar'),
     path('formandos/<int:pk>/eliminar/', views.formando_eliminar, name='formando_eliminar'),
+    # Cursos
+    path('cursos/', views.curso_lista, name='curso_lista'),
+    path('cursos/novo/', views.curso_criar, name='curso_criar'),
+    path('cursos/<int:pk>/', views.curso_detalhe, name='curso_detalhe'),
+    path('cursos/<int:pk>/editar/', views.curso_editar, name='curso_editar'),
+    path('cursos/<int:pk>/eliminar/', views.curso_eliminar, name='curso_eliminar'),
 ]
+

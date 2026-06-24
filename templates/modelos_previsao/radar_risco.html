@@ -1,4 +1,5 @@
 {% extends "base.html" %}
+{% load l10n %}
 {% block title %}Radar de Risco IA — Earth Consulters{% endblock %}
 {% block page_title %}Radar de Risco (Inteligência Artificial){% endblock %}
 {% block content %}
@@ -29,16 +30,17 @@
         <tr>
           <td>
             <div class="d-flex align-items-center">
-              <div class="progress flex-grow-1 me-2" style="height: 8px; min-width: 60px;">
-                <div class="progress-bar {% if i.previsao_churn.probabilidade_desistencia > 75 %}bg-danger{% elif i.previsao_churn.probabilidade_desistencia > 50 %}bg-warning{% else %}bg-info{% endif %}" 
+              <div class="progress flex-grow-1 me-2" style="height: 8px; min-width: 60px; background-color: #e9ecef;">
+                <div class="progress-bar bg-danger" 
                      role="progressbar" 
-                     style="width: {{ i.previsao_churn.probabilidade_desistencia }}%"></div>
+                     style="width: {{ i.previsao_churn.probabilidade_desistencia|unlocalize }}%"></div>
               </div>
-              <strong class="{% if i.previsao_churn.probabilidade_desistencia > 75 %}text-danger{% endif %}">
+              <strong class="text-danger">
                 {{ i.previsao_churn.probabilidade_desistencia|floatformat:1 }}%
               </strong>
             </div>
           </td>
+
           <td>
             <a href="{% url 'entidades:formando_detalhe' i.formando.pk %}" class="fw-bold d-block">
               {{ i.formando.nome }}
